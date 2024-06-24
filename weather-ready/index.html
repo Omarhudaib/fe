@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="weather-side">
+            <div class="weather-gradient"></div>
+            <div class="date-container">
+                <h2 class="date-dayname">Tuesday</h2>
+                <span class="date-day">15 Jan 2019</span>
+                <i class="location-icon" data-feather="map-pin"></i>
+                <span class="location">Paris, FR</span>
+            </div>
+            <div class="weather-container">
+                <i class="weather-icon" data-feather="sun"></i>
+                <h1 class="weather-temp">29°C</h1>
+                <h3 class="weather-desc">Sunny</h3>
+            </div>
+        </div>
+        <div class="info-side">
+            <div class="today-info-container">
+                <div class="today-info">
+                    <div class="precipitation">
+                        <span class="title">PRESSURE</span><span class="PRESSURE value">0 %</span>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="humidity">
+                        <span class="title">HUMIDITY</span><span class="humidity-view">34 %</span>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="wind">
+                        <span class="title">WIND</span><span class="wind-view">0 km/h</span>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="week-container">
+                <ul class="week-list">
+                    <li class="active">
+                        <i class="day-icon" data-feather="sun"></i><span class="day-name">Tue</span><span class="day-temp">29°C</span>
+                    </li>
+                    <li>
+                        <i class="day-icon" data-feather="cloud"></i><span class="day-name">Wed</span><span class="day-temp">21°C</span>
+                    </li>
+                    <li>
+                        <i class="day-icon" data-feather="cloud-snow"></i><span class="day-name">Thu</span><span class="day-temp">08°C</span>
+                    </li>
+                    <li>
+                        <i class="day-icon" data-feather="cloud-rain"></i><span class="day-name">Fri</span><span class="day-temp">19°C</span>
+                    </li>
+                    <div class="clear"></div>
+                </ul>
+            </div>
+            <div class="location-container">
+                <select id="option" class="location-button listcity" onchange="get(this.value)">
+                    <option value="Amman">Amman</option>
+                    <option value="Paris" selected>Paris</option>
+                    <option value="London">London</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <script>  function get(city) {
+        var api = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=d8c2d90dfb3e0f0d66bcb33ea1376a7e`;
+        fetch(api)
+            .then(function (response) {
+                if (response.ok) {
+                    return response.json(); 
+                } else {
+                    throw new Error('Network response was not ok.');
+                }
+            })
+            .then(function (data) {
+             
+                var temperature = data.main.temp;
+                var pressure = data.main.pressure;
+                var humidity = data.main.humidity;
+                var windSpeed = data.wind.speed;
+                var windDirection = data.wind.deg;
+                var weatherDescription = data.weather[0].description;
+                var locationName = data.name;
+                const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+                const now = new Date();
+                var day = weekday[now.getDay()];
+                var date = `${now.getDate()} ${now.toLocaleString('default', { month: 'short' })} ${now.getFullYear()}`;
+
+              
+                document.querySelector('.weather-temp').textContent = `${parseInt(temperature)} °C`;
+                document.querySelector('.PRESSURE.value').textContent = `${pressure} hPa`;
+                document.querySelector('.humidity-view').textContent = `${humidity} %`;
+                document.querySelector('.wind-view').textContent = `${windSpeed} m/s, ${windDirection}°`;
+                document.querySelector('.location').textContent = locationName;
+                document.querySelector('.weather-desc').textContent = weatherDescription;
+                document.querySelector('.date-dayname').textContent = day;
+                document.querySelector('.date-day').textContent = date;
+            })
+            .catch(function (error) {
+                console.log('Fetch error: ', error);
+            });
+    }
+
+ 
+    document.addEventListener('DOMContentLoaded', function() {
+        get(document.querySelector('#option').value);
+    });
+       
+    </script>
+</body>
+</html>
